@@ -9,7 +9,7 @@
 	- broadcaster goroutine broadcasts messages to each 
 	connected client.
 
-	- handler goroutine handles client connections, 
+	- clientHandler goroutine handles client connections, 
 	consuming client input and constructing messages.
 */
 
@@ -25,7 +25,7 @@ import (
 // map of client address to connection
 var clients = make(map[string]net.Conn)
 
-// channel for signaling client disconnet
+// channel for signaling client disconnect
 var disconnect = make(chan message)
 
 // channel for passing messages
@@ -51,13 +51,13 @@ func main(){
 		if err != nil {
 			log.Fatal(err)
 		}
-		go handler(conn)
+		go clientHandler(conn)
 	}
 }
 
 // Goroutine that handles client connections.
 // Consumes client input and constructs messages.
-func handler(conn net.Conn){
+func clientHandler(conn net.Conn){
 	clients[conn.RemoteAddr().String()] = conn
 	messages <- newMessage(" joined", conn)
 	
@@ -97,7 +97,7 @@ func broadcaster(){
 func newMessage(msg string, conn net.Conn) message {
 	addr := conn.RemoteAddr().String()
 	return message {
-		text:		addr + msg,
+		text:		addr + msg + "\n\r",
 		address:	addr,
 	}
 }
