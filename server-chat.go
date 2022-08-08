@@ -17,10 +17,15 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"net"
 )
+
+// CLI flags
+var flagIP = flag.String("ip", "127.0.0.1", "Listening IP address")
+var flagPort = flag.String("port", "9000", "Listening port number")
 
 // map of client address to connection
 var clients = make(map[string]net.Conn)
@@ -39,8 +44,10 @@ type message struct {
 }
 
 func main(){
+	flag.Parse()
+
 	// attempt to listen to a pre-defined local port
-	listen, err := net.Listen("tcp", "localhost:9000")
+	listen, err := net.Listen("tcp", *flagIP+":"+*flagPort)
 	if err != nil {
 		log.Fatal(err)
 	}
